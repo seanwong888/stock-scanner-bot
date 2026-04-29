@@ -35,7 +35,7 @@ while True:
 
     print("Change:", change, "Volume:", volume)
 
-    if ture:
+    if Ture:
         bot.send_message(
             chat_id=chat_id,
             text=f"{symbol} 變動 {change}% 成交量 {volume}"

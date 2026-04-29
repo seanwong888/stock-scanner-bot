@@ -23,7 +23,7 @@ def scan_market():
         print("Missing API_KEY")
         return
 
-    url = f"https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey=8060563116:AAFO5MEVGEivgaviNgB5a0Bf2H21WGeA06k"
+    url = f"https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey=r8LJk0xqF9hWssoD1kXPWZOPUe2Z7gLe"
     
     try:
         response = requests.get(url)

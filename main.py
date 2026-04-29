@@ -43,10 +43,10 @@ def scan_market():
         except:
             continue
 
-        if change >= 0.5 and volume > 5000:
+        if change >= 0 and volume > 5000:
             msg = f"🚀 {stock['symbol']} 上升 {change}%\n成交量: {volume}"
             send_message(msg)
 
 while True:
     scan_market()
-    time.sleep(300)
+    time.sleep(30)

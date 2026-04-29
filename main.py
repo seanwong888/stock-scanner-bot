@@ -14,7 +14,7 @@ def send_message(text):
     requests.post(url, data=payload)
 
 def scan_market():
-    url = "https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey=demo"
+    url = "https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey=r8LJk0xqF9hWssoD1kXPWZOPUe2Z7gLe"
     response = requests.get(url)
     data = response.json()
 

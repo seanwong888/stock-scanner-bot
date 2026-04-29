@@ -8,7 +8,7 @@ TWELVE_API_KEY = os.environ.get("TWELVE_API_KEY")
 
 bot = Bot(token=BOT_TOKEN)
 
-chat_id = "6459645702"
+chat_id = 6459645702
 symbol = "AAPL"
 
 def get_stock_data():

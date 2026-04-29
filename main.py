@@ -1,52 +1,44 @@
-import requests
-import time
 import os
+import time
+import requests
+from telegram import Bot
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-CHAT_ID = os.environ.get("CHAT_ID")
-API_KEY = os.environ.get("API_KEY")
+TWELVE_API_KEY = os.environ.get("TWELVE_API_KEY")
 
-def send_message(text):
-    if not BOT_TOKEN or not CHAT_ID:
-        print("Missing BOT_TOKEN or CHAT_ID")
-        return
-        
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": CHAT_ID,
-        "text": text
-    }
-    requests.post(url, data=payload)
+bot = Bot(token=BOT_TOKEN)
 
-def scan_market():
-    if not API_KEY:
-        print("Missing API_KEY")
-        return
+chat_id = "你的chat_id"
+symbol = "AAPL"
 
-    url = f"https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey={API_KEY}"
-    
-    try:
-        response = requests.get(url)
-        data = response.json()
-    except Exception as e:
-        print("API error:", e)
-        return
+def get_stock_data():
+    url = f"https://api.twelvedata.com/quote?symbol={symbol}&apikey={TWELVE_API_KEY}"
+    response = requests.get(url)
+    data = response.json()
 
-    if not isinstance(data, list):
-        print("Unexpected API response:", data)
-        return
+    if "price" not in data:
+        print("API error:", data)
+        return None, None
 
-    for stock in data:
-        try:
-            change = float(stock['changesPercentage'].replace('%','').replace('+',''))
-            volume = int(stock['volume'])
-        except:
-            continue
+    price = float(data["price"])
+    change = float(data["percent_change"])
+    volume = float(data["volume"])
 
-        if change >= 0 and volume > 5000:
-            msg = f"🚀 {stock['symbol']} 上升 {change}%\n成交量: {volume}"
-            send_message(msg)
+    return change, volume
 
 while True:
-    scan_market()
+    change, volume = get_stock_data()
+
+    if change is None:
+        time.sleep(60)
+        continue
+
+    print("Change:", change, "Volume:", volume)
+
+    if change >= 0 and volume > 5000:
+        bot.send_message(
+            chat_id=chat_id,
+            text=f"{symbol} 變動 {change}% 成交量 {volume}"
+        )
+
     time.sleep(30)

@@ -16,15 +16,16 @@ def get_stock_data():
     response = requests.get(url)
     data = response.json()
 
-    if "price" not in data:
-        print("API error:", data)
-        return None, None
+if "percent_change" not in data:
+    print("API error:", data)
+    return None, None
 
-    price = float(data["price"])
-    change = float(data["percent_change"])
-    volume = float(data["volume"])
+price = float(data["close"])
+change = float(data["percent_change"])
+volume = float(data["volume"])
 
-    return change, volume
+return change, volume
+
 
 while True:
     change, volume = get_stock_data()

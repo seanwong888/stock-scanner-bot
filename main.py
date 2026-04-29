@@ -35,10 +35,14 @@ while True:
 
     print("Change:", change, "Volume:", volume)
 
-    if Ture:
+    if True:
+    try:
         bot.send_message(
             chat_id=chat_id,
             text=f"{symbol} 變動 {change}% 成交量 {volume}"
         )
+        print("✅ Message sent")
+    except Exception as e:
+        print("❌ Send error:", e)
 
     time.sleep(30)

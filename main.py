@@ -1,49 +1,55 @@
-import os
-import time
 import requests
-from telegram import Bot
+import time
+import os
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-TWELVE_API_KEY = os.environ.get("TWELVE_API_KEY")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
+TWELVE_API_KEY = os.getenv("TWELVE_API_KEY")
 
-bot = Bot(token=BOT_TOKEN)
+SYMBOL = "AAPL"
 
-chat_id = 6459645702
-symbol = "AAPL"
-
-def get_stock_data():
-    url = f"https://api.twelvedata.com/quote?symbol={symbol}&apikey={TWELVE_API_KEY}"
-    response = requests.get(url)
-    data = response.json()
-
-if "percent_change" not in data:
-    print("API error:", data)
-    return None, None
-
-price = float(data["close"])
-change = float(data["percent_change"])
-volume = float(data["volume"])
-
-return change, volume
-
+def send_telegram_message(message):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": 6459645702,
+        "text": message
+    }
+    try:
+        response = requests.post(url, data=payload)
+        print("Telegram response:", response.text)
+    except Exception as e:
+        print("Telegram send error:", e)
 
 while True:
-    change, volume = get_stock_data()
-
-    if change is None:
-        time.sleep(60)
-        continue
-
-    print("Change:", change, "Volume:", volume)
-
-    if True:
     try:
-        bot.send_message(
-            chat_id=chat_id,
-            text=f"{symbol} 變動 {change}% 成交量 {volume}"
-        )
-        print("✅ Message sent")
+        url = f"https://api.twelvedata.com/quote?symbol={SYMBOL}&apikey={TWELVE_API_KEY}"
+        response = requests.get(url)
+        data = response.json()
+
+        print("Raw API data:", data)
+
+        # 如果 API 回傳 list
+        if isinstance(data, list):
+            data = data[0]
+
+        # 檢查是否有 percent_change
+        if "percent_change" not in data:
+            print("API error:", data)
+            time.sleep(30)
+            continue
+
+        change = float(data["percent_change"])
+        volume = float(data["volume"])
+
+        print("Change:", change)
+        print("Volume:", volume)
+
+        message = f"{SYMBOL}\nChange: {change}%\nVolume: {volume}"
+
+        send_telegram_message(message)
+
     except Exception as e:
-        print("❌ Send error:", e)
+        print("Main loop error:", e)
 
     time.sleep(30)
+    
